@@ -1,0 +1,31 @@
+{% extends 'inventory/base.html' %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header bg-danger text-white">
+        <h2 class="card-title">Confirm Deletion</h2>
+    </div>
+    <div class="card-body">
+        <p class="fs-5">Are you sure you want to delete the product "{{ product.name }}"?</p>
+        
+        <div class="card mb-4">
+            <div class="card-header">Product Details</div>
+            <div class="card-body">
+                <p><strong>Name:</strong> {{ product.name }}</p>
+                <p><strong>Price:</strong> ₱{{ product.price }}</p>
+                <p><strong>Quantity:</strong> {{ product.quantity }}</p>
+                <p><strong>Created Date:</strong> {{ product.created_date }}</p>
+                <p><strong>Description:</strong> {{ product.description }}</p>
+            </div>
+        </div>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <a href="{% url 'product_list' %}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-danger">Delete</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %} 
