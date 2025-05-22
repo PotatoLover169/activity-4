@@ -1,10 +1,33 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from .models import Product
 from .forms import ProductForm
 
 # Create your views here.
 
+def login_view(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        
+        if user is not None:
+            login(request, user)
+            return redirect('product_list')
+        else:
+            messages.error(request, 'Invalid username or password.')
+    
+    return render(request, 'inventory/login.html')
+
+def logout_view(request):
+    logout(request)
+    messages.success(request, 'You have been successfully logged out.')
+    return redirect('login')
+
+@login_required(login_url='login')
 def product_list(request):
     search_query = request.GET.get('search', '')
     
@@ -21,6 +44,7 @@ def product_list(request):
     context = {'products': products, 'search_query': search_query}
     return render(request, 'inventory/product_list.html', context)
 
+@login_required(login_url='login')
 def product_create(request):
     if request.method == 'POST':
         form = ProductForm(request.POST)
@@ -33,6 +57,7 @@ def product_create(request):
     context = {'form': form, 'title': 'Add New Product'}
     return render(request, 'inventory/product_form.html', context)
 
+@login_required(login_url='login')
 def product_update(request, pk):
     product = get_object_or_404(Product, pk=pk)
     
@@ -47,6 +72,7 @@ def product_update(request, pk):
     context = {'form': form, 'title': 'Edit Product'}
     return render(request, 'inventory/product_form.html', context)
 
+@login_required(login_url='login')
 def product_delete(request, pk):
     product = get_object_or_404(Product, pk=pk)
     
